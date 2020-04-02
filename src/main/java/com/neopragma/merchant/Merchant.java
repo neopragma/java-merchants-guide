@@ -55,12 +55,7 @@ public class Merchant implements MerchantConstants {
 
     private String howMuchIs(String inputLine) {
         String alienNumberCodes = inputLine.substring("How much is ".length(), inputLine.length()-2);
-        StringTokenizer tokens = new StringTokenizer(alienNumberCodes);
-        int arabic = 0;
-        String roman = EMPTY_STRING;
-        while (tokens.hasMoreTokens()) {
-            roman += commodities.dictionary.retrieveRomanNumeralForAlien(tokens.nextToken());
-        }
+        String roman = alienNumberCodesToRomanNumerals(alienNumberCodes);
         return alienNumberCodes + " is " + commodities.converter.toArabic(roman);
      }
 
@@ -72,14 +67,19 @@ public class Merchant implements MerchantConstants {
          String commodityName = alienNumberCodesPlusCommodityName.substring(indexOfCommodityName + 1);
          String alienNumberCodes = alienNumberCodesPlusCommodityName.substring(0, indexOfCommodityName);
 
+         String roman = alienNumberCodesToRomanNumerals(alienNumberCodes);
+         int quantity = commodities.converter.toArabic(roman);
+         int unitPrice = commodities.getCommodity(commodityName).unitPrice;
+         return alienNumberCodesPlusCommodityName + " is " + (quantity * unitPrice) + " Credits";
+     }
+
+     private String alienNumberCodesToRomanNumerals(String alienNumberCodes) {
          StringTokenizer tokens = new StringTokenizer(alienNumberCodes);
          int arabic = 0;
          String roman = EMPTY_STRING;
          while (tokens.hasMoreTokens()) {
              roman += commodities.dictionary.retrieveRomanNumeralForAlien(tokens.nextToken());
          }
-         int quantity = commodities.converter.toArabic(roman);
-         int unitPrice = commodities.getCommodity(commodityName).unitPrice;
-         return alienNumberCodesPlusCommodityName + " is " + (quantity * unitPrice) + " Credits";
+         return roman;
      }
 }
